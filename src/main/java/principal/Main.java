@@ -6,5 +6,4 @@ public class Main {
         Window window = new Window(servico);
     }
 // PENDÊNCIA: TRATAMENTO DE BANDEIRA VERMELHA
-// PENDÊNCIA: VELOCIDADE E MARCHA DE UMA VOLTA
 }

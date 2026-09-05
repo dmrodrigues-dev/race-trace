@@ -41,7 +41,10 @@ public class Window extends JFrame {
     // JPANELS
     JPanel painelSuperior = new JPanel();
     JPanel painelMedio = new JPanel();
-    JPanel painelInferior = new JPanel();
+    JPanel painelColuna1 = new JPanel();
+    JPanel painelGraficoTempo = new JPanel();
+    JPanel painelColuna2 = new JPanel();
+    JPanel painelColuna3 = new JPanel();
 
     // CAMPOS DA SESSAO
     JTextField campoAno = new JTextField();
@@ -72,6 +75,7 @@ public class Window extends JFrame {
         setTitle("Driver Data");
         setSize(950, 700);
         setMinimumSize(new Dimension(800, 600));
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // NOVO
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         getContentPane().setBackground(COR_FUNDO);
@@ -112,9 +116,8 @@ public class Window extends JFrame {
                     selecionado.getFastest_lap().setComplete();
                 }
 
-                nomePiloto.setText(selecionado.toString());
+                nomePiloto.setText(selecionado.toString()+" ");
 
-                painelInferior.removeAll();
                 tempoVolta = getLapTimeChart(selecionado);
                 dadosSetor1 = getLapBrakeThrottleChart(selecionado, selecionado.getFastest_lap().getLap_number(), 1);
                 dadosSetor2 = getLapBrakeThrottleChart(selecionado, selecionado.getFastest_lap().getLap_number(), 2);
@@ -122,15 +125,26 @@ public class Window extends JFrame {
                 speedSetor1 = getLapSpeedChart(selecionado, selecionado.getFastest_lap().getLap_number(), 1);
                 speedSetor2 = getLapSpeedChart(selecionado, selecionado.getFastest_lap().getLap_number(), 2);
                 speedSetor3 = getLapSpeedChart(selecionado, selecionado.getFastest_lap().getLap_number(), 3);
-                painelInferior.add(tempoVolta);
-                painelInferior.add(dadosSetor1);
-                painelInferior.add(dadosSetor2);
-                painelInferior.add(dadosSetor3);
-                painelInferior.add(speedSetor1);
-                painelInferior.add(speedSetor2);
-                painelInferior.add(speedSetor3);
-                painelInferior.revalidate();
-                painelInferior.repaint();
+
+                painelGraficoTempo.removeAll();
+                painelGraficoTempo.add(tempoVolta);
+
+                painelColuna2.removeAll();
+                painelColuna2.add(dadosSetor1);
+                painelColuna2.add(dadosSetor2);
+                painelColuna2.add(dadosSetor3);
+
+                painelColuna3.removeAll();
+                painelColuna3.add(speedSetor1);
+                painelColuna3.add(speedSetor2);
+                painelColuna3.add(speedSetor3);
+
+                painelGraficoTempo.revalidate();
+                painelGraficoTempo.repaint();
+                painelColuna2.revalidate();
+                painelColuna2.repaint();
+                painelColuna3.revalidate();
+                painelColuna3.repaint();
             }
         });
 
@@ -179,30 +193,46 @@ public class Window extends JFrame {
         painelMedio.add(nomePiloto);
         painelMedio.add(Box.createHorizontalGlue());
 
-        // PAINEL INFERIOR
-        painelInferior.setLayout(new BoxLayout(painelInferior, BoxLayout.Y_AXIS));
-        painelInferior.setBackground(Color.WHITE);
-        painelInferior.setBorder(criarBordaTitulada("Gráfico de Desempenho"));
+        // PAINEL GRAFICO DE TEMPO
+        painelGraficoTempo.setLayout(new BoxLayout(painelGraficoTempo, BoxLayout.Y_AXIS));
+        painelGraficoTempo.setBackground(Color.WHITE);
+        painelGraficoTempo.add(tempoVolta);
 
-        painelInferior.add(tempoVolta);
-        painelInferior.add(dadosSetor1);
-        painelInferior.add(dadosSetor2);
-        painelInferior.add(dadosSetor3);
-        painelInferior.add(speedSetor1);
-        painelInferior.add(speedSetor2);
-        painelInferior.add(speedSetor3);
+        // PAINEL FORMULARIO
+        JPanel painelFormulario = new JPanel();
+        painelFormulario.setLayout(new BoxLayout(painelFormulario, BoxLayout.Y_AXIS));
+        painelFormulario.setBackground(COR_FUNDO);
+        painelFormulario.add(painelSuperior);
+        painelFormulario.add(painelMedio);
 
-        JScrollPane scroll = new JScrollPane(painelInferior);
-        scroll.getVerticalScrollBar().setUnitIncrement(10);
+        // COLUNA 1
+        painelColuna1.setLayout(new BorderLayout());
+        painelColuna1.setBackground(COR_FUNDO);
+        painelColuna1.add(painelFormulario, BorderLayout.NORTH);
+        painelColuna1.add(painelGraficoTempo, BorderLayout.CENTER);
+
+        // COLUNA2
+        painelColuna2.setLayout(new GridLayout(3, 1, 0, 10));
+        painelColuna2.setBackground(Color.WHITE);
+        painelColuna2.add(dadosSetor1);
+        painelColuna2.add(dadosSetor2);
+        painelColuna2.add(dadosSetor3);
+
+        // COLUNA 3
+        painelColuna3.setLayout(new GridLayout(3, 1, 0, 10));
+        painelColuna3.setBackground(Color.WHITE);
+        painelColuna3.add(speedSetor1);
+        painelColuna3.add(speedSetor2);
+        painelColuna3.add(speedSetor3);
 
         // MONTAGEM FINAL
-        JPanel topo = new JPanel(new BorderLayout(0, 10));
-        topo.setBackground(COR_FUNDO);
-        topo.add(painelSuperior, BorderLayout.NORTH);
-        topo.add(painelMedio, BorderLayout.SOUTH);
+        JPanel painelPrincipal = new JPanel(new GridLayout(1, 3, 10, 0));
+        painelPrincipal.setBackground(COR_FUNDO);
+        painelPrincipal.add(painelColuna1);
+        painelPrincipal.add(painelColuna2);
+        painelPrincipal.add(painelColuna3);
 
-        add(topo, BorderLayout.NORTH);
-        add(scroll, BorderLayout.CENTER);
+        add(painelPrincipal, BorderLayout.CENTER);
 
         setVisible(true);
     }
@@ -372,7 +402,7 @@ public class Window extends JFrame {
         plot.getRenderer().setSeriesPaint(0, COR_DESTAQUE);
 
         NumberAxis eixoy = (NumberAxis) plot.getRangeAxis();
-        eixoy.setTickUnit(new NumberTickUnit(10));
+        eixoy.setTickUnit(new NumberTickUnit(20));
         CarData cd = piloto.calculateHighestSpeed(lap_number);
         eixoy.setRange(-10, cd.getSpeed() +10);
 
