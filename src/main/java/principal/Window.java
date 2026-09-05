@@ -25,10 +25,10 @@ import java.awt.event.ActionListener;
 public class Window extends JFrame {
 
     // PALETA
-    private static final Color COR_FUNDO       = new Color(245, 246, 248);
-    private static final Color COR_PRIMARIA    = new Color(30, 30, 46);
-    private static final Color COR_DESTAQUE    = new Color(220, 38, 38);   // vermelho estilo F1
-    private static final Color COR_TEXTO       = new Color(30, 30, 30);
+    private static final Color COR_FUNDO       = new Color(17, 17, 17);
+    private static final Color COR_PRIMARIA    = new Color(95, 95, 255);
+    private static final Color COR_DESTAQUE    = new Color(220, 38, 38);
+    private static final Color COR_TEXTO       = new Color(255, 255, 255);
 
     // FONTES
     private static final Font  FONTE_LABEL     = new Font("Segoe UI", Font.PLAIN, 12);
@@ -59,7 +59,7 @@ public class Window extends JFrame {
     JButton buscarPiloto = new JButton("Buscar Piloto");
 
     // LABEL DO PILOTO
-    JLabel nomePiloto = new JLabel("Selecione um piloto");
+    JLabel nomePiloto = new JLabel("Selecione um piloto ");
 
     // GRÁFICOS
     ChartPanel tempoVolta = this.getEmptyChart("Tempo de Volta", "Volta", "Duração");
@@ -151,7 +151,10 @@ public class Window extends JFrame {
         // PAINEL SUPERIOR
         painelSuperior.setLayout(new GridBagLayout());
         painelSuperior.setBackground(COR_FUNDO);
-        painelSuperior.setBorder(criarBordaTitulada("Buscar Sessão"));
+        painelSuperior.setBorder(BorderFactory.createCompoundBorder(
+                criarBordaTitulada("Buscar Sessão"),
+                new EmptyBorder(5, 10, 10, 10)
+        ));
 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(5, 8, 5, 8);
@@ -172,9 +175,14 @@ public class Window extends JFrame {
         // PAINEL MEDIO
         painelMedio.setLayout(new BoxLayout(painelMedio, BoxLayout.X_AXIS));
         painelMedio.setBackground(COR_FUNDO);
-        painelMedio.setBorder(criarBordaTitulada("Piloto"));
+        painelMedio.setBorder(BorderFactory.createCompoundBorder(
+                criarBordaTitulada("Piloto"),
+                new EmptyBorder(5, 10, 10, 10)
+        ));
 
         combo.setFont(FONTE_LABEL);
+        combo.setBackground(new Color(32, 32, 32));
+        combo.setForeground(COR_TEXTO);
         combo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
         combo.setPreferredSize(new Dimension(250, 32));
 
@@ -195,7 +203,7 @@ public class Window extends JFrame {
 
         // PAINEL GRAFICO DE TEMPO
         painelGraficoTempo.setLayout(new BoxLayout(painelGraficoTempo, BoxLayout.Y_AXIS));
-        painelGraficoTempo.setBackground(Color.WHITE);
+        painelGraficoTempo.setBackground(COR_FUNDO);
         painelGraficoTempo.add(tempoVolta);
 
         // PAINEL FORMULARIO
@@ -213,14 +221,14 @@ public class Window extends JFrame {
 
         // COLUNA2
         painelColuna2.setLayout(new GridLayout(3, 1, 0, 10));
-        painelColuna2.setBackground(Color.WHITE);
+        painelColuna2.setBackground(COR_FUNDO);
         painelColuna2.add(dadosSetor1);
         painelColuna2.add(dadosSetor2);
         painelColuna2.add(dadosSetor3);
 
         // COLUNA 3
         painelColuna3.setLayout(new GridLayout(3, 1, 0, 10));
-        painelColuna3.setBackground(Color.WHITE);
+        painelColuna3.setBackground(COR_FUNDO);
         painelColuna3.add(speedSetor1);
         painelColuna3.add(speedSetor2);
         painelColuna3.add(speedSetor3);
@@ -245,10 +253,12 @@ public class Window extends JFrame {
         label.setFont(FONTE_LABEL);
         label.setForeground(COR_TEXTO);
 
+        campo.setBackground(new Color(32, 32, 32));
+        campo.setForeground(COR_TEXTO);
         campo.setFont(FONTE_LABEL);
         campo.setPreferredSize(new Dimension(100, 30));
         campo.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(200, 200, 200)),
+                BorderFactory.createLineBorder(new Color(117, 117, 117)),
                 new EmptyBorder(4, 8, 4, 8)
         ));
 
@@ -275,7 +285,7 @@ public class Window extends JFrame {
     // CRIA UMA BORDA COM TEXTO PARA UM COMPONENTE
     private TitledBorder criarBordaTitulada(String titulo) {
         TitledBorder borda = BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(220, 220, 220)), titulo);
+                BorderFactory.createLineBorder(new Color(117, 117, 117)), titulo);
         borda.setTitleFont(new Font("Segoe UI", Font.BOLD, 12));
         borda.setTitleColor(COR_PRIMARIA);
         return borda;
@@ -299,7 +309,10 @@ public class Window extends JFrame {
         dataset.addSeries(setor2Serie);
         dataset.addSeries(setor3Serie);
         JFreeChart chart = ChartFactory.createXYLineChart("Tempo de volta", "Volta", "Tempo", dataset);
-        chart.setBackgroundPaint(Color.WHITE);
+        chart.setBackgroundPaint(COR_FUNDO);
+        chart.getTitle().setPaint(COR_TEXTO);
+        chart.getLegend().setBackgroundPaint(COR_FUNDO);
+        chart.getLegend().setItemPaint(COR_TEXTO);
 
         XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) chart.getXYPlot().getRenderer();
         renderer.setSeriesStroke(0, new BasicStroke(3.0f));
@@ -308,9 +321,15 @@ public class Window extends JFrame {
         renderer.setSeriesStroke(3, new BasicStroke(3.0f));
 
         XYPlot plot = chart.getXYPlot();
-        plot.setBackgroundPaint(new Color(250, 250, 250));
-        plot.setDomainGridlinePaint(new Color(230, 230, 230));
-        plot.setRangeGridlinePaint(new Color(230, 230, 230));
+        plot.setBackgroundPaint(new Color(32, 32, 32));
+        plot.getDomainAxis().setAxisLinePaint(COR_TEXTO);
+        plot.getRangeAxis().setAxisLinePaint(COR_TEXTO);
+        plot.getDomainAxis().setLabelPaint(COR_TEXTO);
+        plot.getRangeAxis().setLabelPaint(COR_TEXTO);
+        plot.getDomainAxis().setTickLabelPaint(COR_TEXTO);
+        plot.getRangeAxis().setTickLabelPaint(COR_TEXTO);
+        plot.setDomainGridlinePaint(new Color(179, 179, 179));
+        plot.setRangeGridlinePaint(new Color(179, 179, 179));
         plot.getRenderer().setSeriesPaint(0, COR_DESTAQUE);
 
         NumberAxis eixoy = (NumberAxis) plot.getRangeAxis();
@@ -318,17 +337,17 @@ public class Window extends JFrame {
         eixoy.setRange(piloto.getFastest_sector() - 10, piloto.getSlowest_lap().getLap_duration() + 10);
 
         ValueMarker sector1 = new ValueMarker(piloto.getFastest_sectors().get(1).getLap_number());
-        sector1.setPaint(COR_PRIMARIA);
+        sector1.setPaint(COR_DESTAQUE);
         sector1.setLabel("Melhor setor 1");
         plot.addDomainMarker(sector1);
 
         ValueMarker sector2 = new ValueMarker(piloto.getFastest_sectors().get(2).getLap_number());
-        sector2.setPaint(COR_PRIMARIA);
+        sector2.setPaint(COR_DESTAQUE);
         sector2.setLabel("Melhor setor 2");
         plot.addDomainMarker(sector2);
 
         ValueMarker sector3 = new ValueMarker(piloto.getFastest_sectors().get(3).getLap_number());
-        sector3.setPaint(COR_PRIMARIA);
+        sector3.setPaint(COR_DESTAQUE);
         sector3.setLabel("Melhor setor 3");
         plot.addDomainMarker(sector3);
 
@@ -352,7 +371,10 @@ public class Window extends JFrame {
         dataset.addSeries(brakeSerie);
         dataset.addSeries(throttleSerie);
         JFreeChart chart = ChartFactory.createXYLineChart("Dados do setor "+setor +" da volta "+lap_number, "Segundo", "Valor", dataset);
-        chart.setBackgroundPaint(Color.WHITE);
+        chart.setBackgroundPaint(COR_FUNDO);
+        chart.getTitle().setPaint(COR_TEXTO);
+        chart.getLegend().setBackgroundPaint(COR_FUNDO);
+        chart.getLegend().setItemPaint(COR_TEXTO);
 
 
         XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) chart.getXYPlot().getRenderer();
@@ -362,9 +384,15 @@ public class Window extends JFrame {
 
         XYPlot plot = chart.getXYPlot();
 
-        plot.setBackgroundPaint(new Color(250, 250, 250));
-        plot.setDomainGridlinePaint(new Color(230, 230, 230));
-        plot.setRangeGridlinePaint(new Color(230, 230, 230));
+        plot.setBackgroundPaint(new Color(32, 32, 32));
+        plot.getDomainAxis().setAxisLinePaint(COR_TEXTO);
+        plot.getRangeAxis().setAxisLinePaint(COR_TEXTO);
+        plot.getDomainAxis().setLabelPaint(COR_TEXTO);
+        plot.getRangeAxis().setLabelPaint(COR_TEXTO);
+        plot.getDomainAxis().setTickLabelPaint(COR_TEXTO);
+        plot.getRangeAxis().setTickLabelPaint(COR_TEXTO);
+        plot.setDomainGridlinePaint(new Color(179, 179, 179));
+        plot.setRangeGridlinePaint(new Color(179, 179, 179));
         plot.getRenderer().setSeriesPaint(0, COR_DESTAQUE);
 
         NumberAxis eixoy = (NumberAxis) plot.getRangeAxis();
@@ -388,7 +416,10 @@ public class Window extends JFrame {
         XYSeriesCollection dataset = new XYSeriesCollection();
         dataset.addSeries(speedSerie);
         JFreeChart chart = ChartFactory.createXYLineChart("Velocidades do setor "+setor +" da volta "+lap_number, "Segundo", "Valor(km/h)", dataset);
-        chart.setBackgroundPaint(Color.WHITE);
+        chart.setBackgroundPaint(COR_FUNDO);
+        chart.getTitle().setPaint(COR_TEXTO);
+        chart.getLegend().setBackgroundPaint(COR_FUNDO);
+        chart.getLegend().setItemPaint(COR_TEXTO);
 
 
         XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) chart.getXYPlot().getRenderer();
@@ -396,9 +427,15 @@ public class Window extends JFrame {
 
         XYPlot plot = chart.getXYPlot();
 
-        plot.setBackgroundPaint(new Color(250, 250, 250));
-        plot.setDomainGridlinePaint(new Color(230, 230, 230));
-        plot.setRangeGridlinePaint(new Color(230, 230, 230));
+        plot.setBackgroundPaint(new Color(32, 32, 32));
+        plot.getDomainAxis().setAxisLinePaint(COR_TEXTO);
+        plot.getRangeAxis().setAxisLinePaint(COR_TEXTO);
+        plot.getDomainAxis().setLabelPaint(COR_TEXTO);
+        plot.getRangeAxis().setLabelPaint(COR_TEXTO);
+        plot.getDomainAxis().setTickLabelPaint(COR_TEXTO);
+        plot.getRangeAxis().setTickLabelPaint(COR_TEXTO);
+        plot.setDomainGridlinePaint(new Color(179, 179, 179));
+        plot.setRangeGridlinePaint(new Color(179, 179, 179));
         plot.getRenderer().setSeriesPaint(0, COR_DESTAQUE);
 
         NumberAxis eixoy = (NumberAxis) plot.getRangeAxis();
@@ -407,7 +444,7 @@ public class Window extends JFrame {
         eixoy.setRange(-10, cd.getSpeed() +10);
 
         ValueMarker higherSp = new ValueMarker(cd.timePassed(piloto.getVoltas().get(lap_number).getDates().get("start_sector_1")));
-        higherSp.setPaint(COR_PRIMARIA);
+        higherSp.setPaint(COR_DESTAQUE);
         higherSp.setLabel("Maior Velocidade");
         plot.addDomainMarker(higherSp);
 
@@ -424,7 +461,20 @@ public class Window extends JFrame {
         XYSeriesCollection dataset = new XYSeriesCollection();
         dataset.addSeries(serie);
         JFreeChart chart = ChartFactory.createXYLineChart(nome, eixoX, eixoY, dataset);
-        chart.setBackgroundPaint(Color.WHITE);
+        chart.setBackgroundPaint(COR_FUNDO);
+        chart.getTitle().setPaint(COR_TEXTO);
+        chart.getLegend().setBackgroundPaint(COR_FUNDO);
+        chart.getLegend().setItemPaint(COR_TEXTO);
+
+        XYPlot plot = chart.getXYPlot();
+
+        plot.setBackgroundPaint(new Color(32, 32, 32));
+        plot.getDomainAxis().setAxisLinePaint(COR_TEXTO);
+        plot.getRangeAxis().setAxisLinePaint(COR_TEXTO);
+        plot.getDomainAxis().setLabelPaint(COR_TEXTO);
+        plot.getRangeAxis().setLabelPaint(COR_TEXTO);
+        plot.getDomainAxis().setTickLabelPaint(COR_TEXTO);
+        plot.getRangeAxis().setTickLabelPaint(COR_TEXTO);
 
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setMinimumSize(new Dimension(400, 200));
