@@ -58,6 +58,7 @@ public class Service {
         ArrayList<Volta> voltas = formatter.getArrayObjetos(json, Volta.class);
         HashMap<Integer, Volta> voltasMap = new HashMap<Integer, Volta>();
         for (Volta v : voltas) {
+            v.fixSectorDuration();
             voltasMap.put(v.getLap_number(), v);
         }
 

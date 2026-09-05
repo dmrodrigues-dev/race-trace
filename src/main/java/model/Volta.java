@@ -114,4 +114,16 @@ public class Volta {
         durationSectors.put(3, duration_sector_3);
         return durationSectors;
     }
+
+    public void fixSectorDuration() {
+        if (duration_sector_1 == 0.0 && duration_sector_2 != 0.0 && duration_sector_3 != 0.0 && lap_duration != 0.0) {
+            this.duration_sector_1 = lap_duration - (duration_sector_2 + duration_sector_3);
+        } else if (duration_sector_2 == 0.0 && duration_sector_3 != 0.0 && duration_sector_1 != 0.0 && lap_duration != 0.0) {
+            this.duration_sector_2 = lap_duration - (duration_sector_1 + duration_sector_3);
+        } else if (duration_sector_3 == 0.0 && duration_sector_1 != 0.0 && duration_sector_2 != 0.0 && lap_duration != 0.0) {
+            this.duration_sector_3 = lap_duration - (duration_sector_1 + duration_sector_2);
+        } else if (lap_duration == 0.0 && duration_sector_1 != 0.0 && duration_sector_2 != 0.0 && duration_sector_3 != 0.0) {
+            this.lap_duration = duration_sector_1 + duration_sector_2 + duration_sector_3;
+        }
+    }
 }
