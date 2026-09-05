@@ -60,9 +60,12 @@ public class Window extends JFrame {
 
     // GRÁFICOS
     ChartPanel tempoVolta = this.getEmptyChart("Tempo de Volta", "Volta", "Duração");
-    ChartPanel dadosSetor1 = this.getEmptyChart("Dados do setor 1", "Hora", "Valor");
-    ChartPanel dadosSetor2 = this.getEmptyChart("Dados do setor 2", "Hora", "Valor");
-    ChartPanel dadosSetor3 = this.getEmptyChart("Dados do setor 3", "Hora", "Valor");
+    ChartPanel dadosSetor1 = this.getEmptyChart("Dados do setor 1", "Segundo", "Valor");
+    ChartPanel dadosSetor2 = this.getEmptyChart("Dados do setor 2", "Segundo", "Valor");
+    ChartPanel dadosSetor3 = this.getEmptyChart("Dados do setor 3", "Segundo", "Valor");
+    ChartPanel speedSetor1 = this.getEmptyChart("Velocidades do setor 1", "Segundo", "Valor(km/h)");
+    ChartPanel speedSetor2 = this.getEmptyChart("Velocidades do setor 2", "Segundo", "Valor(km/h)");
+    ChartPanel speedSetor3 = this.getEmptyChart("Velocidades do setor 3", "Segundo", "Valor(km/h)");
 
     public Window(Service servico) {
         // CONFIGURAÇÕES BÁSICAS
@@ -113,13 +116,19 @@ public class Window extends JFrame {
 
                 painelInferior.removeAll();
                 tempoVolta = getLapTimeChart(selecionado);
-                dadosSetor1 = getLapCarDataChart(selecionado, selecionado.getFastest_lap().getLap_number(), 1);
-                dadosSetor2 = getLapCarDataChart(selecionado, selecionado.getFastest_lap().getLap_number(), 2);
-                dadosSetor3 = getLapCarDataChart(selecionado, selecionado.getFastest_lap().getLap_number(), 3);
+                dadosSetor1 = getLapBrakeThrottleChart(selecionado, selecionado.getFastest_lap().getLap_number(), 1);
+                dadosSetor2 = getLapBrakeThrottleChart(selecionado, selecionado.getFastest_lap().getLap_number(), 2);
+                dadosSetor3 = getLapBrakeThrottleChart(selecionado, selecionado.getFastest_lap().getLap_number(), 3);
+                speedSetor1 = getLapSpeedChart(selecionado, selecionado.getFastest_lap().getLap_number(), 1);
+                speedSetor2 = getLapSpeedChart(selecionado, selecionado.getFastest_lap().getLap_number(), 2);
+                speedSetor3 = getLapSpeedChart(selecionado, selecionado.getFastest_lap().getLap_number(), 3);
                 painelInferior.add(tempoVolta);
                 painelInferior.add(dadosSetor1);
                 painelInferior.add(dadosSetor2);
                 painelInferior.add(dadosSetor3);
+                painelInferior.add(speedSetor1);
+                painelInferior.add(speedSetor2);
+                painelInferior.add(speedSetor3);
                 painelInferior.revalidate();
                 painelInferior.repaint();
             }
@@ -179,6 +188,9 @@ public class Window extends JFrame {
         painelInferior.add(dadosSetor1);
         painelInferior.add(dadosSetor2);
         painelInferior.add(dadosSetor3);
+        painelInferior.add(speedSetor1);
+        painelInferior.add(speedSetor2);
+        painelInferior.add(speedSetor3);
 
         JScrollPane scroll = new JScrollPane(painelInferior);
         scroll.getVerticalScrollBar().setUnitIncrement(10);
@@ -298,7 +310,7 @@ public class Window extends JFrame {
     }
 
     // RETORNA UM CHARTPANEL PREENCHIDO COM DADOS DE ACELERADOR E FREIOS
-    private ChartPanel getLapCarDataChart(Piloto piloto, int lap_number, int setor) {
+    private ChartPanel getLapBrakeThrottleChart(Piloto piloto, int lap_number, int setor) {
 
         XYSeries brakeSerie = new XYSeries("Freio");
         XYSeries throttleSerie = new XYSeries("Acelerador");
@@ -328,6 +340,46 @@ public class Window extends JFrame {
         NumberAxis eixoy = (NumberAxis) plot.getRangeAxis();
         eixoy.setTickUnit(new NumberTickUnit(10));
         eixoy.setRange(-10, 110);
+
+        ChartPanel chartPanel = new ChartPanel(chart);
+        chartPanel.setMinimumSize(new Dimension(400, 200));
+        chartPanel.setMaximumSize(new Dimension(1600, 800));
+        chartPanel.setPreferredSize(new Dimension(800, 400));
+        return chartPanel;
+    }
+
+    // RETORNA UM CHARTPANEL PREENCHIDO COM VELOCIDADES DURANTE UM SETOR
+    private ChartPanel getLapSpeedChart(Piloto piloto, int lap_number, int setor) {
+
+        XYSeries speedSerie = new XYSeries("Speed");
+        for (CarData cd : piloto.getVoltas().get(lap_number).getLapCarData().get(setor)) {
+            speedSerie.add(cd.timePassed(piloto.getVoltas().get(lap_number).getDates().get("start_sector_1")), cd.getSpeed());
+        }
+        XYSeriesCollection dataset = new XYSeriesCollection();
+        dataset.addSeries(speedSerie);
+        JFreeChart chart = ChartFactory.createXYLineChart("Velocidades do setor "+setor +" da volta "+lap_number, "Segundo", "Valor(km/h)", dataset);
+        chart.setBackgroundPaint(Color.WHITE);
+
+
+        XYLineAndShapeRenderer renderer = (XYLineAndShapeRenderer) chart.getXYPlot().getRenderer();
+        renderer.setSeriesStroke(0, new BasicStroke(3.0f));
+
+        XYPlot plot = chart.getXYPlot();
+
+        plot.setBackgroundPaint(new Color(250, 250, 250));
+        plot.setDomainGridlinePaint(new Color(230, 230, 230));
+        plot.setRangeGridlinePaint(new Color(230, 230, 230));
+        plot.getRenderer().setSeriesPaint(0, COR_DESTAQUE);
+
+        NumberAxis eixoy = (NumberAxis) plot.getRangeAxis();
+        eixoy.setTickUnit(new NumberTickUnit(10));
+        CarData cd = piloto.calculateHighestSpeed(lap_number);
+        eixoy.setRange(-10, cd.getSpeed() +10);
+
+        ValueMarker higherSp = new ValueMarker(cd.timePassed(piloto.getVoltas().get(lap_number).getDates().get("start_sector_1")));
+        higherSp.setPaint(COR_PRIMARIA);
+        higherSp.setLabel("Maior Velocidade");
+        plot.addDomainMarker(higherSp);
 
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setMinimumSize(new Dimension(400, 200));

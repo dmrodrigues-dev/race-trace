@@ -10,10 +10,10 @@ import java.util.HashMap;
 @JsonIgnoreProperties( ignoreUnknown = true)
 public class Piloto {
     private int driver_number;
-    private String full_name, team_name, team_colour;
+    private String full_name, team_name;
     private HashMap<Integer, Volta> voltas;
     private ArrayList<Pit> pits;
-    private Volta fastest_lap, fastest_sector_1, fastest_sector_2, fastest_sector_3, slowest_lap, slowest_sector_1, slowest_sector_2,  slowest_sector_3;
+    private Volta fastest_lap, fastest_sector_1, fastest_sector_2, fastest_sector_3, slowest_lap;
     private boolean isComplete = false;
     private double fastest_sector;
 
@@ -38,10 +38,6 @@ public class Piloto {
         this.team_name = team_name;
     }
 
-    public void setTeam_colour(String team_colour) {
-        this.team_colour = team_colour;
-    }
-
     public void setVoltas(HashMap<Integer, Volta> voltas) { this.voltas = voltas; }
 
     public void setPits(ArrayList<Pit> pits) { this.pits = pits; }
@@ -54,13 +50,10 @@ public class Piloto {
         this.slowest_lap = Collections.max(voltas.values(), comparator);
         comparator = Comparator.comparing(l -> l.duration_sector_1);
         this.fastest_sector_1 = Collections.min(voltas.values(), comparator);
-        this.slowest_sector_1 = Collections.max(voltas.values(), comparator);
         comparator = Comparator.comparing(l -> l.duration_sector_2);
         this.fastest_sector_2 = Collections.min(voltas.values(), comparator);
-        this.slowest_sector_2 = Collections.max(voltas.values(), comparator);
         comparator = Comparator.comparing(l -> l.duration_sector_3);
         this.fastest_sector_3 = Collections.min(voltas.values(), comparator);
-        this.slowest_sector_3 = Collections.max(voltas.values(), comparator);
 
         fastest_sector = fastest_sector_1.getSectorDurations().get(1);
         for (Volta volta : getFastest_sectors().values()) {
@@ -70,6 +63,17 @@ public class Piloto {
                 }
             }
         }
+    }
+
+    public CarData calculateHighestSpeed(int lap_number) {
+        Volta lap = this.voltas.get(lap_number);
+        CarData highestSpeed = lap.getHighSpeed(1);
+        for (int setor = 2; setor < 4; setor++) {
+            if (lap.getHighSpeed(setor).getSpeed() > highestSpeed.getSpeed()) {
+                highestSpeed = lap.getHighSpeed(setor);
+            }
+        }
+        return highestSpeed;
     }
 
     public int getDriver_number() { return this.driver_number; }

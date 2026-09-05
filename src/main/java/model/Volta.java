@@ -5,6 +5,8 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -71,6 +73,12 @@ public class Volta {
     public double getLap_duration() {return lap_duration;}
 
     public HashMap<Integer, ArrayList<CarData>> getLapCarData() {return lapCarData;}
+
+    public CarData getHighSpeed(int setor) {
+        Comparator<CarData> comparator = Comparator.comparing(cd -> cd.speed);
+        CarData hSpeed = Collections.max(this.lapCarData.get(setor), comparator);
+        return hSpeed;
+    }
 
     // CALCULA E RETORNA DATETIME DO FINAL DA VOLTA, EM ISO
     public HashMap<String, String> getDates() {
