@@ -27,7 +27,6 @@ public class Service {
         endpoints.put("pits", "https://api.openf1.org/v1/pit?");
         endpoints.put("cardata", "https://api.openf1.org/v1/car_data?");
         endpoints.put("resultado", "https://api.openf1.org/v1/session_result?");
-        endpoints.put("racecontrol", "https://api.openf1.org/v1/race_control?");
     }
 
     // BUSCA E RETORNA A SESSAO
@@ -36,7 +35,6 @@ public class Service {
         json = resposta.get("body");
         Sessao sessao = formatter.getObjeto(json, Sessao.class);
         sessao.setResultado(fetchSessionResult(sessao));
-        sessao.setRace_controls(fetchRaceControls(sessao));
         sessao.setPilotos(getPilotos(sessao));
         return sessao;
     }
@@ -63,10 +61,6 @@ public class Service {
         ArrayList<Volta> voltas = formatter.getArrayObjetos(json, Volta.class);
         HashMap<Integer, Volta> voltasMap = new HashMap<Integer, Volta>();
         for (Volta v : voltas) {
-            v.fixSectorDuration();
-            if (sessao.getInterrupted().contains(v.getLap_number())) {
-                v.setInterrupted();
-            }
             voltasMap.put(v.getLap_number(), v);
         }
 
@@ -122,14 +116,6 @@ public class Service {
         return formatter.getArrayObjetos(json, SessionResult.class);
     }
 
-    // BUSCA E RETORNA ARRAYLIST DE RACE CONTROL
-    private ArrayList<RaceControl> fetchRaceControls(Sessao sessao) {
-        resposta = cliente.getResposta(endpoints.get("racecontrol") +
-                "&session_key=" +sessao.getSession_key());
-        json = resposta.get("body");
-        ArrayList<RaceControl> raceControlsArrList =  formatter.getArrayObjetos(json, RaceControl.class);
-        return raceControlsArrList;
-    }
 
     private void marcarDnsDnf(Sessao sessao, Piloto piloto) {
         for (SessionResult resultado : sessao.getResultado()) {

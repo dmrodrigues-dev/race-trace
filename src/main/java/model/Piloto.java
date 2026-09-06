@@ -45,6 +45,7 @@ public class Piloto {
         this.voltas = voltas;
         this.voltasValidas.clear();
         for (Volta v : voltas.values()) {
+            v.fixSectorDuration();
             if (v.isValid()) {
                 voltasValidas.put(v.getLap_number(), v);
             }

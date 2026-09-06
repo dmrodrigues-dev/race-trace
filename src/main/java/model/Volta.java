@@ -11,6 +11,8 @@ import java.util.HashMap;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Volta {
+    public static final double maxTime = 500.0;
+
      int lap_number;
      String date_start;
      double duration_sector_1, duration_sector_2, duration_sector_3, lap_duration;
@@ -75,7 +77,14 @@ public class Volta {
         return !interrupted &&
                 duration_sector_1 != 0.0 &&
                 duration_sector_2 != 0.0 &&
-                duration_sector_3 != 0.0;
+                duration_sector_3 != 0.0 &&
+                !this.abnormalSector();
+    }
+
+    public boolean abnormalSector() {
+        return duration_sector_1 > maxTime ||
+                duration_sector_2 > maxTime ||
+                duration_sector_3 > maxTime;
     }
 
     public int getLap_number() {return lap_number;}

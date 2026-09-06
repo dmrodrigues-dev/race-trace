@@ -29,6 +29,7 @@ public class Window extends JFrame {
     private static final Color COR_PRIMARIA    = new Color(95, 95, 255);
     private static final Color COR_DESTAQUE    = new Color(220, 38, 38);
     private static final Color COR_TEXTO       = new Color(255, 255, 255);
+    private static final Color COR_EXTRA       = new Color(255, 216, 0);
 
     // FONTES
     private static final Font  FONTE_LABEL     = new Font("Segoe UI", Font.PLAIN, 12);
@@ -349,17 +350,17 @@ public class Window extends JFrame {
         eixoy.setRange(piloto.getFastest_sector() - 10, piloto.getSlowest_lap().getLap_duration() + 10);
 
         ValueMarker sector1 = new ValueMarker(piloto.getFastest_sectors().get(1).getLap_number());
-        sector1.setPaint(COR_DESTAQUE);
+        sector1.setPaint(COR_EXTRA);
         sector1.setLabel("Melhor setor 1");
         plot.addDomainMarker(sector1);
 
         ValueMarker sector2 = new ValueMarker(piloto.getFastest_sectors().get(2).getLap_number());
-        sector2.setPaint(COR_DESTAQUE);
+        sector2.setPaint(COR_EXTRA);
         sector2.setLabel("Melhor setor 2");
         plot.addDomainMarker(sector2);
 
         ValueMarker sector3 = new ValueMarker(piloto.getFastest_sectors().get(3).getLap_number());
-        sector3.setPaint(COR_DESTAQUE);
+        sector3.setPaint(COR_EXTRA);
         sector3.setLabel("Melhor setor 3");
         plot.addDomainMarker(sector3);
 
@@ -456,7 +457,7 @@ public class Window extends JFrame {
         eixoy.setRange(-10, cd.getSpeed() +10);
 
         ValueMarker higherSp = new ValueMarker(cd.timePassed(piloto.getVoltas().get(lap_number).getDates().get("start_sector_1")));
-        higherSp.setPaint(COR_DESTAQUE);
+        higherSp.setPaint(COR_EXTRA);
         higherSp.setLabel("Maior Velocidade");
         plot.addDomainMarker(higherSp);
 

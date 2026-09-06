@@ -11,7 +11,6 @@ public class Sessao {
     private String circuit_short_name, country_name, session_name;
     private HashMap<Integer, Piloto> pilotos = new HashMap<>();
     private ArrayList<SessionResult> resultado = new ArrayList<>();
-    private ArrayList<RaceControl> race_controls = new ArrayList<>();
 
     public void info() {
         System.out.println("Circuito: " +this.circuit_short_name +
@@ -42,8 +41,6 @@ public class Sessao {
 
     public void setResultado(ArrayList<SessionResult> resultado) { this.resultado = resultado; }
 
-    public void setRace_controls(ArrayList<RaceControl> race_controls) { this.race_controls = race_controls; }
-
     public void setPilotos(HashMap<Integer, Piloto> pilotos) { this.pilotos = pilotos; }
 
     public int  getSession_key() { return this.session_key; }
@@ -52,13 +49,4 @@ public class Sessao {
 
     public ArrayList<SessionResult> getResultado() { return this.resultado; }
 
-    public ArrayList<Integer> getInterrupted() {
-        ArrayList<Integer> interrupt = new ArrayList<>();
-        for (RaceControl rc : this.race_controls) {
-            if (rc.getMessage() != null && rc.getMessage().equals("RED FLAG - RACE SUSPENDED")) {
-                interrupt.add(rc.getLap_number());
-            }
-        }
-        return interrupt;
-    }
 }
