@@ -5,5 +5,4 @@ public class Main {
         Service servico = new Service();
         Window window = new Window(servico);
     }
-// PENDÊNCIA: TRATAMENTO DE BANDEIRA VERMELHA
 }

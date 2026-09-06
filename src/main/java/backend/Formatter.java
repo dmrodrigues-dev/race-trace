@@ -1,6 +1,7 @@
 package backend;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.exc.MismatchedInputException;
 
 import java.util.ArrayList;
 import java.util.NoSuchElementException;
@@ -28,6 +29,8 @@ public class Formatter {
             ArrayList<T> lista = mapper.readValue(json, mapper.getTypeFactory()
                     .constructCollectionType(ArrayList.class, classe));
             return lista;
+        } catch (MismatchedInputException e) {
+            return new ArrayList<>();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

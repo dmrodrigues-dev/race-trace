@@ -12,9 +12,12 @@ public class Piloto {
     private int driver_number;
     private String full_name, team_name;
     private HashMap<Integer, Volta> voltas;
+    private HashMap<Integer, Volta> voltasValidas = new HashMap<Integer, Volta>();
     private ArrayList<Pit> pits;
     private Volta fastest_lap, fastest_sector_1, fastest_sector_2, fastest_sector_3, slowest_lap;
     private boolean isComplete = false;
+    private boolean dnf = false;
+    private boolean dns = false;
     private double fastest_sector;
 
     public void info() {
@@ -38,22 +41,40 @@ public class Piloto {
         this.team_name = team_name;
     }
 
-    public void setVoltas(HashMap<Integer, Volta> voltas) { this.voltas = voltas; }
+    public void setVoltas(HashMap<Integer, Volta> voltas) {
+        this.voltas = voltas;
+        this.voltasValidas.clear();
+        for (Volta v : voltas.values()) {
+            if (v.isValid()) {
+                voltasValidas.put(v.getLap_number(), v);
+            }
+        }
+    }
 
     public void setPits(ArrayList<Pit> pits) { this.pits = pits; }
 
     public void setComplete() { this.isComplete = true; }
 
+    public void setDns() {
+        this.dns = true;
+    }
+
+    public void setDnf() {
+        this.dnf = true;
+    }
+
     public void calculateBestAndWorst() {
+        if(voltasValidas.isEmpty()){return;}
+
         Comparator<Volta> comparator = Comparator.comparing(l -> l.lap_duration);
-        this.fastest_lap = Collections.min(voltas.values(), comparator);
-        this.slowest_lap = Collections.max(voltas.values(), comparator);
+        this.fastest_lap = Collections.min(voltasValidas.values(), comparator);
+        this.slowest_lap = Collections.max(voltasValidas.values(), comparator);
         comparator = Comparator.comparing(l -> l.duration_sector_1);
-        this.fastest_sector_1 = Collections.min(voltas.values(), comparator);
+        this.fastest_sector_1 = Collections.min(voltasValidas.values(), comparator);
         comparator = Comparator.comparing(l -> l.duration_sector_2);
-        this.fastest_sector_2 = Collections.min(voltas.values(), comparator);
+        this.fastest_sector_2 = Collections.min(voltasValidas.values(), comparator);
         comparator = Comparator.comparing(l -> l.duration_sector_3);
-        this.fastest_sector_3 = Collections.min(voltas.values(), comparator);
+        this.fastest_sector_3 = Collections.min(voltasValidas.values(), comparator);
 
         fastest_sector = fastest_sector_1.getSectorDurations().get(1);
         for (Volta volta : getFastest_sectors().values()) {
@@ -66,7 +87,7 @@ public class Piloto {
     }
 
     public CarData calculateHighestSpeed(int lap_number) {
-        Volta lap = this.voltas.get(lap_number);
+        Volta lap = this.voltasValidas.get(lap_number);
         CarData highestSpeed = lap.getHighSpeed(1);
         for (int setor = 2; setor < 4; setor++) {
             if (lap.getHighSpeed(setor).getSpeed() > highestSpeed.getSpeed()) {
@@ -95,6 +116,14 @@ public class Piloto {
     }
 
     public ArrayList<Pit> getPits() { return this.pits; }
+
+    public boolean isDnf() {
+        return dnf;
+    }
+
+    public boolean isDns() {
+        return dns;
+    }
 
     public boolean isComplete() { return this.isComplete; }
 }

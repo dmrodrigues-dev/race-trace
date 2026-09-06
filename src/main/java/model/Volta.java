@@ -17,6 +17,7 @@ public class Volta {
      HashMap<Integer, ArrayList<CarData>> lapCarData = new HashMap<Integer, ArrayList<CarData>>();
      boolean is_pit_out = false;
      boolean isComplete = false;
+     boolean interrupted = false;
      Pit pit;
     
     public void info() {
@@ -64,9 +65,18 @@ public class Volta {
 
     public void setComplete() { this.isComplete = true; }
 
+    public void setInterrupted() { this.interrupted = true; }
+
     public void setLapCarData(HashMap<Integer, ArrayList<CarData>> lapCarData) { this.lapCarData = lapCarData; }
 
     public boolean isComplete() { return this.isComplete; }
+
+    public boolean isValid() {
+        return !interrupted &&
+                duration_sector_1 != 0.0 &&
+                duration_sector_2 != 0.0 &&
+                duration_sector_3 != 0.0;
+    }
 
     public int getLap_number() {return lap_number;}
 

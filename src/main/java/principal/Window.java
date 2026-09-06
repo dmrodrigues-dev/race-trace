@@ -96,6 +96,7 @@ public class Window extends JFrame {
                 for (Piloto p : sessao.getPilotos().values()) {
                     combo.addItem(p);
                 }
+                getEmptyCharts();
             }
         });
 
@@ -111,40 +112,44 @@ public class Window extends JFrame {
                     selecionado.setComplete();
                 }
 
-                if (!selecionado.getFastest_lap().isComplete()) {
+                if (selecionado.getFastest_lap() != null && !selecionado.getFastest_lap().isComplete()) {
                     servico.fetchCarData(sessao, selecionado, selecionado.getFastest_lap().getLap_number());
                     selecionado.getFastest_lap().setComplete();
                 }
 
-                nomePiloto.setText(selecionado.toString()+" ");
+                nomePiloto.setText(selecionado.toString() +(selecionado.isDnf() ? "(DNF) " :" "));
 
-                tempoVolta = getLapTimeChart(selecionado);
-                dadosSetor1 = getLapBrakeThrottleChart(selecionado, selecionado.getFastest_lap().getLap_number(), 1);
-                dadosSetor2 = getLapBrakeThrottleChart(selecionado, selecionado.getFastest_lap().getLap_number(), 2);
-                dadosSetor3 = getLapBrakeThrottleChart(selecionado, selecionado.getFastest_lap().getLap_number(), 3);
-                speedSetor1 = getLapSpeedChart(selecionado, selecionado.getFastest_lap().getLap_number(), 1);
-                speedSetor2 = getLapSpeedChart(selecionado, selecionado.getFastest_lap().getLap_number(), 2);
-                speedSetor3 = getLapSpeedChart(selecionado, selecionado.getFastest_lap().getLap_number(), 3);
+                if (selecionado.getFastest_lap() == null) {
+                    getEmptyCharts();
+                } else {
+                    tempoVolta = getLapTimeChart(selecionado);
+                    dadosSetor1 = getLapBrakeThrottleChart(selecionado, selecionado.getFastest_lap().getLap_number(), 1);
+                    dadosSetor2 = getLapBrakeThrottleChart(selecionado, selecionado.getFastest_lap().getLap_number(), 2);
+                    dadosSetor3 = getLapBrakeThrottleChart(selecionado, selecionado.getFastest_lap().getLap_number(), 3);
+                    speedSetor1 = getLapSpeedChart(selecionado, selecionado.getFastest_lap().getLap_number(), 1);
+                    speedSetor2 = getLapSpeedChart(selecionado, selecionado.getFastest_lap().getLap_number(), 2);
+                    speedSetor3 = getLapSpeedChart(selecionado, selecionado.getFastest_lap().getLap_number(), 3);
 
-                painelGraficoTempo.removeAll();
-                painelGraficoTempo.add(tempoVolta);
+                    painelGraficoTempo.removeAll();
+                    painelGraficoTempo.add(tempoVolta);
 
-                painelColuna2.removeAll();
-                painelColuna2.add(dadosSetor1);
-                painelColuna2.add(dadosSetor2);
-                painelColuna2.add(dadosSetor3);
+                    painelColuna2.removeAll();
+                    painelColuna2.add(dadosSetor1);
+                    painelColuna2.add(dadosSetor2);
+                    painelColuna2.add(dadosSetor3);
 
-                painelColuna3.removeAll();
-                painelColuna3.add(speedSetor1);
-                painelColuna3.add(speedSetor2);
-                painelColuna3.add(speedSetor3);
+                    painelColuna3.removeAll();
+                    painelColuna3.add(speedSetor1);
+                    painelColuna3.add(speedSetor2);
+                    painelColuna3.add(speedSetor3);
 
-                painelGraficoTempo.revalidate();
-                painelGraficoTempo.repaint();
-                painelColuna2.revalidate();
-                painelColuna2.repaint();
-                painelColuna3.revalidate();
-                painelColuna3.repaint();
+                    painelGraficoTempo.revalidate();
+                    painelGraficoTempo.repaint();
+                    painelColuna2.revalidate();
+                    painelColuna2.repaint();
+                    painelColuna3.revalidate();
+                    painelColuna3.repaint();
+                }
             }
         });
 
@@ -298,10 +303,17 @@ public class Window extends JFrame {
         XYSeries setor2Serie = new XYSeries("Setor 2");
         XYSeries setor3Serie = new XYSeries("Setor 3");
         for (Volta volta : piloto.getVoltas().values()) {
-            lapSerie.add(volta.getLap_number(), volta.getLap_duration());
-            setor1Serie.add(volta.getLap_number(), volta.getSectorDurations().get(1));
-            setor2Serie.add(volta.getLap_number(), volta.getSectorDurations().get(2));
-            setor3Serie.add(volta.getLap_number(), volta.getSectorDurations().get(3));
+            if (!volta.isValid()) {
+                lapSerie.add(volta.getLap_number(), null);
+                setor1Serie.add(volta.getLap_number(), null);
+                setor2Serie.add(volta.getLap_number(), null);
+                setor3Serie.add(volta.getLap_number(), null);
+            } else {
+                lapSerie.add(volta.getLap_number(), volta.getLap_duration());
+                setor1Serie.add(volta.getLap_number(), volta.getSectorDurations().get(1));
+                setor2Serie.add(volta.getLap_number(), volta.getSectorDurations().get(2));
+                setor3Serie.add(volta.getLap_number(), volta.getSectorDurations().get(3));
+            }
         }
         XYSeriesCollection dataset = new XYSeriesCollection();
         dataset.addSeries(lapSerie);
@@ -481,5 +493,36 @@ public class Window extends JFrame {
         chartPanel.setMaximumSize(new Dimension(1600, 800));
         chartPanel.setPreferredSize(new Dimension(800, 400));
         return chartPanel;
+    }
+
+    // RECONSTROI GRÁFICOS VAZIOS
+    private void getEmptyCharts() {
+        tempoVolta = getEmptyChart("Tempo de Volta", "Volta", "Duração");
+        dadosSetor1 = getEmptyChart("Dados do setor 1", "Segundo", "Valor");
+        dadosSetor2 = getEmptyChart("Dados do setor 2", "Segundo", "Valor");
+        dadosSetor3 = getEmptyChart("Dados do setor 3", "Segundo", "Valor");
+        speedSetor1 = getEmptyChart("Velocidades do setor 1", "Segundo", "Valor(km/h)");
+        speedSetor2 = getEmptyChart("Velocidades do setor 2", "Segundo", "Valor(km/h)");
+        speedSetor3 = getEmptyChart("Velocidades do setor 3", "Segundo", "Valor(km/h)");
+
+        painelGraficoTempo.removeAll();
+        painelGraficoTempo.add(tempoVolta);
+
+        painelColuna2.removeAll();
+        painelColuna2.add(dadosSetor1);
+        painelColuna2.add(dadosSetor2);
+        painelColuna2.add(dadosSetor3);
+
+        painelColuna3.removeAll();
+        painelColuna3.add(speedSetor1);
+        painelColuna3.add(speedSetor2);
+        painelColuna3.add(speedSetor3);
+
+        painelGraficoTempo.revalidate();
+        painelGraficoTempo.repaint();
+        painelColuna2.revalidate();
+        painelColuna2.repaint();
+        painelColuna3.revalidate();
+        painelColuna3.repaint();
     }
 }

@@ -26,6 +26,8 @@ public class Service {
         endpoints.put("voltas", "https://api.openf1.org/v1/laps?");
         endpoints.put("pits", "https://api.openf1.org/v1/pit?");
         endpoints.put("cardata", "https://api.openf1.org/v1/car_data?");
+        endpoints.put("resultado", "https://api.openf1.org/v1/session_result?");
+        endpoints.put("racecontrol", "https://api.openf1.org/v1/race_control?");
     }
 
     // BUSCA E RETORNA A SESSAO
@@ -33,6 +35,8 @@ public class Service {
         resposta = cliente.getResposta(endpoints.get("sessao") +"&year=" +ano +"&session_name=" +tipo +"&country_name=" +pais);
         json = resposta.get("body");
         Sessao sessao = formatter.getObjeto(json, Sessao.class);
+        sessao.setResultado(fetchSessionResult(sessao));
+        sessao.setRace_controls(fetchRaceControls(sessao));
         sessao.setPilotos(getPilotos(sessao));
         return sessao;
     }
@@ -44,6 +48,7 @@ public class Service {
         json = resposta.get("body");
         ArrayList<Piloto> resposta = formatter.getArrayObjetos(json, Piloto.class);
         for (Piloto p : resposta) {
+            marcarDnsDnf(sessao, p);
             pilotos.put(p.getDriver_number(), p);
         }
         return pilotos;
@@ -59,6 +64,9 @@ public class Service {
         HashMap<Integer, Volta> voltasMap = new HashMap<Integer, Volta>();
         for (Volta v : voltas) {
             v.fixSectorDuration();
+            if (sessao.getInterrupted().contains(v.getLap_number())) {
+                v.setInterrupted();
+            }
             voltasMap.put(v.getLap_number(), v);
         }
 
@@ -104,6 +112,33 @@ public class Service {
         }
 
         piloto.getVoltas().get(volta).setLapCarData(carDataMap);
+    }
+
+    // BUSCA E RETORNA ARRAYLIST DE SESSION RESULT
+    private ArrayList<SessionResult> fetchSessionResult(Sessao sessao) {
+        resposta = cliente.getResposta(endpoints.get("resultado") +
+                "&session_key=" +sessao.getSession_key());
+        json = resposta.get("body");
+        return formatter.getArrayObjetos(json, SessionResult.class);
+    }
+
+    // BUSCA E RETORNA ARRAYLIST DE RACE CONTROL
+    private ArrayList<RaceControl> fetchRaceControls(Sessao sessao) {
+        resposta = cliente.getResposta(endpoints.get("racecontrol") +
+                "&session_key=" +sessao.getSession_key());
+        json = resposta.get("body");
+        ArrayList<RaceControl> raceControlsArrList =  formatter.getArrayObjetos(json, RaceControl.class);
+        return raceControlsArrList;
+    }
+
+    private void marcarDnsDnf(Sessao sessao, Piloto piloto) {
+        for (SessionResult resultado : sessao.getResultado()) {
+            if (resultado.getDriver_number() ==  piloto.getDriver_number()) {
+                if (resultado.isDnf()) {piloto.setDnf();}
+                if (resultado.isDns()) {piloto.setDns();}
+                break;
+            }
+        }
     }
 
 }
