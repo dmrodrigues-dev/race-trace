@@ -52,6 +52,9 @@ public class Window extends JFrame {
     JTextField campoPais = new JTextField();
     JTextField campoTipo = new JTextField();
 
+    // BARRA DE CARREGAMENTO
+    JProgressBar barra = new JProgressBar();
+
     // COMBOBOX
     JComboBox<Piloto> combo = new JComboBox<>();
 
@@ -87,70 +90,105 @@ public class Window extends JFrame {
         buscarSessao.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                exibirCarregando(true);
+
                 String ano = campoAno.getText();
                 String tipo = campoTipo.getText();
                 String pais = campoPais.getText();
 
-                sessao = servico.getSessao(ano, tipo, pais);
+                SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
+                    @Override
+                    protected Void doInBackground() throws Exception {
+                        sessao = servico.getSessao(ano, tipo, pais);
+                        return null;
+                    }
 
-                combo.removeAllItems();
-                for (Piloto p : sessao.getPilotos().values()) {
-                    combo.addItem(p);
-                }
-                getEmptyCharts();
+                    @Override
+                    protected void done() {
+                        exibirCarregando(false);
+                        try {
+                            get();
+                            combo.removeAllItems();
+                            for (Piloto p : sessao.getPilotos().values()) {
+                                combo.addItem(p);
+                            }
+                            getEmptyCharts();
+                        } catch (Exception e) {
+                            showError("Erro ao buscar sessão\n" +e.getMessage());
+                        }
+                    }
+                };
+                worker.execute();
             }
         });
 
         buscarPiloto.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                exibirCarregando(true);
                 Piloto selecionado = (Piloto) combo.getSelectedItem();
                 if (selecionado == null) return;
 
-                if (!selecionado.isComplete()) {
-                    servico.fetchVoltas(sessao, selecionado);
-                    servico.fetchPits(sessao, selecionado);
-                    selecionado.setComplete();
-                }
+                SwingWorker<Void, Void> worker = new  SwingWorker<Void, Void>() {
+                    @Override
+                    protected Void doInBackground() throws Exception {
+                        if (!selecionado.isComplete()) {
+                            servico.fetchVoltas(sessao, selecionado);
+                            servico.fetchPits(sessao, selecionado);
+                            selecionado.setComplete();
+                        }
 
-                if (selecionado.getFastest_lap() != null && !selecionado.getFastest_lap().isComplete()) {
-                    servico.fetchCarData(sessao, selecionado, selecionado.getFastest_lap().getLap_number());
-                    selecionado.getFastest_lap().setComplete();
-                }
+                        if (selecionado.getFastest_lap() != null && !selecionado.getFastest_lap().isComplete()) {
+                            servico.fetchCarData(sessao, selecionado, selecionado.getFastest_lap().getLap_number());
+                            selecionado.getFastest_lap().setComplete();
+                        }
+                        return null;
+                    }
 
-                nomePiloto.setText(selecionado.toString() +(selecionado.isDnf() ? "(DNF) " :" "));
+                    @Override
+                    protected void done() {
+                        exibirCarregando(false);
+                        try {
+                            get();
+                            nomePiloto.setText(selecionado.toString() +(selecionado.isDnf() ? "(DNF) " :" "));
 
-                if (selecionado.getFastest_lap() == null) {
-                    getEmptyCharts();
-                } else {
-                    tempoVolta = getLapTimeChart(selecionado);
-                    dadosSetor1 = getLapBrakeThrottleChart(selecionado, selecionado.getFastest_lap().getLap_number(), 1);
-                    dadosSetor2 = getLapBrakeThrottleChart(selecionado, selecionado.getFastest_lap().getLap_number(), 2);
-                    dadosSetor3 = getLapBrakeThrottleChart(selecionado, selecionado.getFastest_lap().getLap_number(), 3);
-                    speedSetor1 = getLapSpeedChart(selecionado, selecionado.getFastest_lap().getLap_number(), 1);
-                    speedSetor2 = getLapSpeedChart(selecionado, selecionado.getFastest_lap().getLap_number(), 2);
-                    speedSetor3 = getLapSpeedChart(selecionado, selecionado.getFastest_lap().getLap_number(), 3);
+                            if (selecionado.getFastest_lap() == null) {
+                                getEmptyCharts();
+                            } else {
+                                tempoVolta = getLapTimeChart(selecionado);
+                                dadosSetor1 = getLapBrakeThrottleChart(selecionado, selecionado.getFastest_lap().getLap_number(), 1);
+                                dadosSetor2 = getLapBrakeThrottleChart(selecionado, selecionado.getFastest_lap().getLap_number(), 2);
+                                dadosSetor3 = getLapBrakeThrottleChart(selecionado, selecionado.getFastest_lap().getLap_number(), 3);
+                                speedSetor1 = getLapSpeedChart(selecionado, selecionado.getFastest_lap().getLap_number(), 1);
+                                speedSetor2 = getLapSpeedChart(selecionado, selecionado.getFastest_lap().getLap_number(), 2);
+                                speedSetor3 = getLapSpeedChart(selecionado, selecionado.getFastest_lap().getLap_number(), 3);
 
-                    painelGraficoTempo.removeAll();
-                    painelGraficoTempo.add(tempoVolta);
+                                painelGraficoTempo.removeAll();
+                                painelGraficoTempo.add(tempoVolta);
 
-                    painelColuna2.removeAll();
-                    painelColuna2.add(dadosSetor1);
-                    painelColuna2.add(dadosSetor2);
-                    painelColuna2.add(dadosSetor3);
+                                painelColuna2.removeAll();
+                                painelColuna2.add(dadosSetor1);
+                                painelColuna2.add(dadosSetor2);
+                                painelColuna2.add(dadosSetor3);
 
-                    painelColuna3.removeAll();
-                    painelColuna3.add(speedSetor1);
-                    painelColuna3.add(speedSetor2);
-                    painelColuna3.add(speedSetor3);
+                                painelColuna3.removeAll();
+                                painelColuna3.add(speedSetor1);
+                                painelColuna3.add(speedSetor2);
+                                painelColuna3.add(speedSetor3);
 
-                    painelGraficoTempo.revalidate();
-                    painelGraficoTempo.repaint();
-                    painelColuna2.revalidate();
-                    painelColuna2.repaint();
-                    painelColuna3.revalidate();
-                    painelColuna3.repaint();
-                }
+                                painelGraficoTempo.revalidate();
+                                painelGraficoTempo.repaint();
+                                painelColuna2.revalidate();
+                                painelColuna2.repaint();
+                                painelColuna3.revalidate();
+                                painelColuna3.repaint();
+                            }
+                        } catch (Exception e) {
+                            showError("Erro ao buscar piloto\n" +e.getMessage());
+                        }
+                    }
+                };
+                worker.execute();
             }
         });
 
@@ -191,10 +229,18 @@ public class Window extends JFrame {
         combo.setForeground(COR_TEXTO);
         combo.setMaximumSize(new Dimension(Integer.MAX_VALUE, 32));
         combo.setPreferredSize(new Dimension(250, 32));
+        UIManager.put("ComboBox.disabledBackground", new Color(32, 32, 32));
+        UIManager.put("ComboBox.disabledForeground", COR_TEXTO);
 
         estilizarBotaoPrimario(buscarPiloto);
         buscarPiloto.setMaximumSize(new Dimension(150, 32));
         buscarPiloto.setPreferredSize(new Dimension(150, 32));
+
+        barra.setMaximumSize(new Dimension(150, 32));
+        barra.setPreferredSize(new Dimension(150, 32));
+        barra.setBackground(new Color(32, 32, 32));
+        barra.setForeground(COR_DESTAQUE);
+        barra.setVisible(false);
 
         nomePiloto.setFont(FONTE_TITULO);
         nomePiloto.setForeground(COR_PRIMARIA);
@@ -206,6 +252,7 @@ public class Window extends JFrame {
         painelMedio.add(Box.createHorizontalStrut(15));
         painelMedio.add(nomePiloto);
         painelMedio.add(Box.createHorizontalGlue());
+        painelMedio.add(barra);
 
         // PAINEL GRAFICO DE TEMPO
         painelGraficoTempo.setLayout(new BoxLayout(painelGraficoTempo, BoxLayout.Y_AXIS));
@@ -525,5 +572,25 @@ public class Window extends JFrame {
         painelColuna2.repaint();
         painelColuna3.revalidate();
         painelColuna3.repaint();
+    }
+
+    // INDICADOR DE CARREGAMENTO
+    public void exibirCarregando(boolean carregando) {
+        barra.setIndeterminate(carregando);
+        nomePiloto.setVisible(!carregando);
+        barra.setVisible(carregando);
+        buscarSessao.setEnabled(!carregando);
+        buscarPiloto.setEnabled(!carregando);
+        combo.setEnabled(!carregando);
+    }
+
+    // EXIBE MODAL DE ERRO
+    public void showError(String mensagem) {
+        UIManager.put("OptionPane.background", new Color(32, 32, 32));
+        UIManager.put("OptionPane.messageForeground", COR_TEXTO);
+        UIManager.put("Panel.background", new Color(32, 32, 32));
+        UIManager.put("Button.background", COR_DESTAQUE);
+        UIManager.put("Button.foreground", COR_TEXTO);
+        JOptionPane.showMessageDialog(this, mensagem, "Erro",  JOptionPane.ERROR_MESSAGE);
     }
 }
