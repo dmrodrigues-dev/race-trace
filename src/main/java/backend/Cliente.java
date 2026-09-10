@@ -29,6 +29,9 @@ public class Cliente {
 
             // EXIBE STATUSCODE NO TERMINAL
             System.out.println(resposta.statusCode());
+            if (resposta.statusCode() != 200) {
+                throw new RuntimeException(resposta.statusCode() +" - " + resposta.body());
+            }
 
             // CRIA HASHMAP COM STATUS E BODY
             HashMap<String, String> map = new HashMap<>();
