@@ -4,6 +4,8 @@ import backend.Cliente;
 import backend.Formatter;
 import model.*;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -29,8 +31,10 @@ public class Service {
     }
 
     // BUSCA E RETORNA A SESSAO
-    Sessao getSessao(String ano, String tipo, String pais) {
-        resposta = cliente.getResposta(endpoints.get("sessao") +"&year=" +ano +"&session_name=" +tipo +"&country_name=" +pais);
+    Sessao getSessao(String ano, String tipo, String circuito) {
+        tipo = URLEncoder.encode(tipo, StandardCharsets.UTF_8);
+        circuito = URLEncoder.encode(circuito, StandardCharsets.UTF_8);
+        resposta = cliente.getResposta(endpoints.get("sessao") +"&year=" +ano +"&session_name=" +tipo +"&circuit_short_name=" +circuito);
         json = resposta.get("body");
         Sessao sessao = formatter.getObjeto(json, Sessao.class);
         sessao.setResultado(fetchSessionResult(sessao));

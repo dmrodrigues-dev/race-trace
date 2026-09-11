@@ -49,7 +49,7 @@ public class Window extends JFrame {
 
     // CAMPOS DA SESSAO
     JTextField campoAno = new JTextField();
-    JTextField campoPais = new JTextField();
+    JTextField campoCircuito = new JTextField();
     JTextField campoTipo = new JTextField();
 
     // BARRA DE CARREGAMENTO
@@ -94,12 +94,12 @@ public class Window extends JFrame {
 
                 String ano = campoAno.getText();
                 String tipo = campoTipo.getText();
-                String pais = campoPais.getText();
+                String circuito = campoCircuito.getText();
 
                 SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
                     @Override
                     protected Void doInBackground() throws Exception {
-                        sessao = servico.getSessao(ano, tipo, pais);
+                        sessao = servico.getSessao(ano, tipo, circuito);
                         return null;
                     }
 
@@ -204,7 +204,7 @@ public class Window extends JFrame {
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         adicionarCampoComLabel(painelSuperior, gbc, "Ano", campoAno, 0);
-        adicionarCampoComLabel(painelSuperior, gbc, "País", campoPais, 1);
+        adicionarCampoComLabel(painelSuperior, gbc, "Circuito", campoCircuito, 1);
         adicionarCampoComLabel(painelSuperior, gbc, "Tipo", campoTipo, 2);
 
         gbc.gridx = 3;
