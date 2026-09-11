@@ -134,7 +134,6 @@ public class Window extends JFrame {
                     protected Void doInBackground() throws Exception {
                         if (!selecionado.isComplete()) {
                             servico.fetchVoltas(sessao, selecionado);
-                            servico.fetchPits(sessao, selecionado);
                             selecionado.setComplete();
                         }
 

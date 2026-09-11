@@ -24,7 +24,6 @@ public class Service {
         endpoints.put("sessao", "https://api.openf1.org/v1/sessions?");
         endpoints.put("piloto", "https://api.openf1.org/v1/drivers?");
         endpoints.put("voltas", "https://api.openf1.org/v1/laps?");
-        endpoints.put("pits", "https://api.openf1.org/v1/pit?");
         endpoints.put("cardata", "https://api.openf1.org/v1/car_data?");
         endpoints.put("resultado", "https://api.openf1.org/v1/session_result?");
     }
@@ -66,15 +65,6 @@ public class Service {
 
         piloto.setVoltas(voltasMap);
         piloto.calculateBestAndWorst();
-    }
-
-    // BUSCA E ATRIBUI PITS AO PILOTO
-    void fetchPits(Sessao sessao, Piloto piloto) {
-        resposta = cliente.getResposta(endpoints.get("pits") +
-                "&session_key=" +sessao.getSession_key() +
-                "&driver_number=" +piloto.getDriver_number());
-        json = resposta.get("body");
-        piloto.setPits(formatter.getArrayObjetos(json, Pit.class));
     }
 
     // BUSCA CARDATA DE DETERMINADA VOLTA DO PILOTO

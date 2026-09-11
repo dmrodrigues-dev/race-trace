@@ -13,7 +13,6 @@ public class Piloto {
     private String full_name, team_name;
     private HashMap<Integer, Volta> voltas;
     private HashMap<Integer, Volta> voltasValidas = new HashMap<Integer, Volta>();
-    private ArrayList<Pit> pits;
     private Volta fastest_lap, fastest_sector_1, fastest_sector_2, fastest_sector_3, slowest_lap;
     private boolean isComplete = false;
     private boolean dnf = false;
@@ -51,8 +50,6 @@ public class Piloto {
             }
         }
     }
-
-    public void setPits(ArrayList<Pit> pits) { this.pits = pits; }
 
     public void setComplete() { this.isComplete = true; }
 
@@ -115,8 +112,6 @@ public class Piloto {
         setores.put(3,this.fastest_sector_3);
         return setores;
     }
-
-    public ArrayList<Pit> getPits() { return this.pits; }
 
     public boolean isDnf() {
         return dnf;

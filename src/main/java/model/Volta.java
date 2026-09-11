@@ -20,7 +20,6 @@ public class Volta {
      boolean is_pit_out = false;
      boolean isComplete = false;
      boolean interrupted = false;
-     Pit pit;
     
     public void info() {
         System.out.println("Volta " +this.lap_number +
@@ -28,19 +27,10 @@ public class Volta {
                 "\nSetor 1: " +this.duration_sector_1 +
                 "\nSetor 2: " +this.duration_sector_2 +
                 "\nSetor 3: " +this.duration_sector_3);
-
-        if (is_pit_out) {
-            System.out.println("Pit:");
-            pit.info();
-        }
     }
 
     public void setLap_number(int lap_number) {
         this.lap_number = lap_number;
-    }
-
-    public void setPit(Pit pit) {
-        this.pit = pit;
     }
 
     public void setIs_pit_out(boolean is_pit_out) {
