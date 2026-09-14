@@ -50,13 +50,13 @@ public class Window extends JFrame {
     // CAMPOS DA SESSAO
     JTextField campoAno = new JTextField();
     JTextField campoCircuito = new JTextField();
-    JTextField campoTipo = new JTextField();
 
     // BARRA DE CARREGAMENTO
     JProgressBar barra = new JProgressBar();
 
     // COMBOBOX
     JComboBox<Piloto> combo = new JComboBox<>();
+    JComboBox<String> comboTipo = new JComboBox<>();
 
     // BOTÕES
     JButton buscarSessao = new JButton("Buscar Sessão");
@@ -93,7 +93,7 @@ public class Window extends JFrame {
                 exibirCarregando(true);
 
                 String ano = campoAno.getText();
-                String tipo = campoTipo.getText();
+                String tipo = comboTipo.getSelectedItem().toString();
                 String circuito = campoCircuito.getText();
 
                 SwingWorker<Void, Void> worker = new SwingWorker<Void, Void>() {
@@ -203,9 +203,17 @@ public class Window extends JFrame {
         gbc.insets = new Insets(5, 8, 5, 8);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
+        comboTipo.addItem("Practice 1");
+        comboTipo.addItem("Practice 2");
+        comboTipo.addItem("Practice 3");
+        comboTipo.addItem("Sprint Qualifying");
+        comboTipo.addItem("Sprint");
+        comboTipo.addItem("Qualifying");
+        comboTipo.addItem("Race");
+
         adicionarCampoComLabel(painelSuperior, gbc, "Ano", campoAno, 0);
         adicionarCampoComLabel(painelSuperior, gbc, "Circuito", campoCircuito, 1);
-        adicionarCampoComLabel(painelSuperior, gbc, "Tipo", campoTipo, 2);
+        adicionarComboComLabel(painelSuperior, gbc, "Tipo", comboTipo, 2);
 
         gbc.gridx = 3;
         gbc.gridy = 0;
@@ -322,6 +330,27 @@ public class Window extends JFrame {
 
         gbc.gridy = 1;
         painel.add(campo, gbc);
+    }
+
+    // CRIA COMBO COM SEU RESPECTIVO JLABEL
+    public void adicionarComboComLabel(JPanel painel, GridBagConstraints gbc, String texto, JComboBox<String> combo, int coluna) {
+        JLabel label = new JLabel(texto);
+        label.setFont(FONTE_LABEL);
+        label.setForeground(COR_TEXTO);
+
+        combo.setBackground(new Color(32, 32, 32));
+        combo.setForeground(COR_TEXTO);
+        combo.setFont(FONTE_LABEL);
+        combo.setPreferredSize(new Dimension(100, 30));
+
+        gbc.gridx = coluna;
+        gbc.gridy = 0;
+        gbc.weightx = 1;
+        gbc.gridheight = 1;
+        painel.add(label, gbc);
+
+        gbc.gridy = 1;
+        painel.add(combo, gbc);
     }
 
     // ESTILIZA BOTÃO
