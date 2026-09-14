@@ -11,7 +11,7 @@ import java.util.HashMap;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Volta {
-    public static final double maxTime = 500.0;
+    public static final double maxTime = 300.0;
 
      int lap_number;
      String date_start;
