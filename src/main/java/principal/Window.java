@@ -21,6 +21,7 @@ import javax.swing.border.TitledBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashMap;
 
 public class Window extends JFrame {
 
@@ -44,6 +45,8 @@ public class Window extends JFrame {
     JPanel painelMedio = new JPanel();
     JPanel painelColuna1 = new JPanel();
     JPanel painelGraficoTempo = new JPanel();
+    JPanel painelMelhorVolta  = new JPanel();
+    JPanel painelInfoSetores = new JPanel();
     JPanel painelColuna2 = new JPanel();
     JPanel painelColuna3 = new JPanel();
 
@@ -62,8 +65,12 @@ public class Window extends JFrame {
     JButton buscarSessao = new JButton("Buscar Sessão");
     JButton buscarPiloto = new JButton("Buscar Piloto");
 
-    // LABEL DO PILOTO
+    // LABELS
     JLabel nomePiloto = new JLabel("Selecione um piloto ");
+    JLabel infoTempoVolta = new JLabel("0.0");
+    JLabel infoSetor1 = new JLabel("0.0");
+    JLabel infoSetor2 = new JLabel("0.0");
+    JLabel infoSetor3 = new JLabel("0.0");
 
     // GRÁFICOS
     ChartPanel tempoVolta = this.getEmptyChart("Tempo de Volta", "Volta", "Duração");
@@ -154,6 +161,15 @@ public class Window extends JFrame {
                             if (selecionado.getFastest_lap() == null) {
                                 getEmptyCharts();
                             } else {
+                                infoTempoVolta.setText("Volta " +selecionado.getFastest_lap().getLap_number() +": "
+                                        +Double.toString(selecionado.getFastest_lap().getLap_duration()));
+                                HashMap<Integer, Volta> setores = selecionado.getFastest_sectors();
+                                infoSetor1.setText("Volta " +setores.get(1).getLap_number() +": "
+                                        +Double.toString(setores.get(1).getSectorDurations().get(1)));
+                                infoSetor2.setText("Volta " +setores.get(2).getLap_number() +": "
+                                        +Double.toString(setores.get(2).getSectorDurations().get(2)));
+                                infoSetor3.setText("Volta " +setores.get(3).getLap_number() +": "
+                                        +Double.toString(setores.get(3).getSectorDurations().get(3)));
                                 tempoVolta = getLapTimeChart(selecionado);
                                 dadosSetor1 = getLapBrakeThrottleChart(selecionado, selecionado.getFastest_lap().getLap_number(), 1);
                                 dadosSetor2 = getLapBrakeThrottleChart(selecionado, selecionado.getFastest_lap().getLap_number(), 2);
@@ -163,7 +179,7 @@ public class Window extends JFrame {
                                 speedSetor3 = getLapSpeedChart(selecionado, selecionado.getFastest_lap().getLap_number(), 3);
 
                                 painelGraficoTempo.removeAll();
-                                painelGraficoTempo.add(tempoVolta);
+                                painelGraficoTempo.add(tempoVolta, BorderLayout.CENTER);
 
                                 painelColuna2.removeAll();
                                 painelColuna2.add(dadosSetor1);
@@ -261,10 +277,24 @@ public class Window extends JFrame {
         painelMedio.add(Box.createHorizontalGlue());
         painelMedio.add(barra);
 
+        // PAINEL DE MELHOR TEMPO DE VOLTA
+        painelMelhorVolta.setBackground(COR_FUNDO);
+        painelMelhorVolta.add(criarPainelInfo(infoTempoVolta, "Melhor tempo de volta"));
+        painelMelhorVolta.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        // PAINEL DE TEMPOS DE SETORES
+        painelInfoSetores.setLayout(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        painelInfoSetores.setBackground(COR_FUNDO);
+        painelInfoSetores.add(criarPainelInfo(infoSetor1, "Melhor setor 1"));
+        painelInfoSetores.add(criarPainelInfo(infoSetor2, "Melhor setor 2"));
+        painelInfoSetores.add(criarPainelInfo(infoSetor3, "Melhor setor 3"));
+        painelInfoSetores.setAlignmentX(Component.CENTER_ALIGNMENT);
+
         // PAINEL GRAFICO DE TEMPO
-        painelGraficoTempo.setLayout(new BoxLayout(painelGraficoTempo, BoxLayout.Y_AXIS));
+        painelGraficoTempo.setLayout(new BorderLayout());
+        painelGraficoTempo.setBorder(new EmptyBorder(15, 0, 0, 0));
         painelGraficoTempo.setBackground(COR_FUNDO);
-        painelGraficoTempo.add(tempoVolta);
+        painelGraficoTempo.add(tempoVolta, BorderLayout.CENTER);
 
         // PAINEL FORMULARIO
         JPanel painelFormulario = new JPanel();
@@ -273,11 +303,25 @@ public class Window extends JFrame {
         painelFormulario.add(painelSuperior);
         painelFormulario.add(painelMedio);
 
+        // PAINEL INFO
+        JPanel painelInfo = new JPanel();
+        painelInfo.setLayout(new BoxLayout(painelInfo, BoxLayout.Y_AXIS));
+        painelInfo.setBackground(COR_FUNDO);
+        painelInfo.add(painelMelhorVolta);
+        painelInfo.add(Box.createVerticalStrut(10));
+        painelInfo.add(painelInfoSetores);
+
+        // PAINEL COM GRÁFICO + INFO, DIVIDINDO O ESPAÇO RESTANTE DA COLUNA
+        JPanel painelGraficoEInfo = new JPanel(new BorderLayout(0, 10));
+        painelGraficoEInfo.setBackground(COR_FUNDO);
+        painelGraficoEInfo.add(painelGraficoTempo, BorderLayout.CENTER);
+        painelGraficoEInfo.add(painelInfo, BorderLayout.SOUTH);
+
         // COLUNA 1
         painelColuna1.setLayout(new BorderLayout());
         painelColuna1.setBackground(COR_FUNDO);
         painelColuna1.add(painelFormulario, BorderLayout.NORTH);
-        painelColuna1.add(painelGraficoTempo, BorderLayout.CENTER);
+        painelColuna1.add(painelGraficoEInfo, BorderLayout.CENTER);
 
         // COLUNA2
         painelColuna2.setLayout(new GridLayout(3, 1, 0, 10));
@@ -370,6 +414,30 @@ public class Window extends JFrame {
         borda.setTitleFont(new Font("Segoe UI", Font.BOLD, 12));
         borda.setTitleColor(COR_PRIMARIA);
         return borda;
+    }
+
+    // RETORNA UM JPANEL COM UM JLABEL
+    private JPanel criarPainelInfo(JLabel label, String titulo) {
+        JPanel painel = new JPanel(new BorderLayout());
+        painel.setBackground(COR_FUNDO);
+
+        painel.setPreferredSize(new Dimension(180, 60));
+        painel.setMinimumSize(new Dimension(180, 60));
+        painel.setMaximumSize(new Dimension(180, 60));
+
+        painel.setBorder(BorderFactory.createCompoundBorder(
+                criarBordaTitulada(titulo),
+                new EmptyBorder(5, 10, 5, 10)
+        ));
+
+        label.setHorizontalAlignment(SwingConstants.CENTER);
+        label.setVerticalAlignment(SwingConstants.CENTER);
+        label.setFont(FONTE_TITULO);
+        label.setForeground(COR_TEXTO);
+
+        painel.add(label, BorderLayout.CENTER);
+
+        return painel;
     }
 
     // RETORNA UM CHARTPANEL PREENCHIDO DOS TEMPOS DE VOLTA
@@ -571,7 +639,7 @@ public class Window extends JFrame {
         return chartPanel;
     }
 
-    // RECONSTROI GRÁFICOS VAZIOS
+    // RECONSTROI GRÁFICOS VAZIOS E LIMPA INFO
     private void getEmptyCharts() {
         tempoVolta = getEmptyChart("Tempo de Volta", "Volta", "Duração");
         dadosSetor1 = getEmptyChart("Dados do setor 1", "Segundo", "Valor");
@@ -582,7 +650,11 @@ public class Window extends JFrame {
         speedSetor3 = getEmptyChart("Velocidades do setor 3", "Segundo", "Valor(km/h)");
 
         painelGraficoTempo.removeAll();
-        painelGraficoTempo.add(tempoVolta);
+        painelGraficoTempo.add(tempoVolta, BorderLayout.CENTER);
+        infoTempoVolta.setText("0.0");
+        infoSetor1.setText("0.0");
+        infoSetor2.setText("0.0");
+        infoSetor3.setText("0.0");
 
         painelColuna2.removeAll();
         painelColuna2.add(dadosSetor1);
