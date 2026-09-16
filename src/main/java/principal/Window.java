@@ -83,7 +83,7 @@ public class Window extends JFrame {
 
     public Window(Service servico) {
         // CONFIGURAÇÕES BÁSICAS
-        setTitle("Driver Data");
+        setTitle("RaceTrace");
         setSize(950, 700);
         setMinimumSize(new Dimension(800, 600));
         setExtendedState(JFrame.MAXIMIZED_BOTH); // NOVO
@@ -495,16 +495,19 @@ public class Window extends JFrame {
         ValueMarker sector1 = new ValueMarker(piloto.getFastest_sectors().get(1).getLap_number());
         sector1.setPaint(COR_EXTRA);
         sector1.setLabel("Melhor setor 1");
+        sector1.setLabelPaint(COR_TEXTO);
         plot.addDomainMarker(sector1);
 
         ValueMarker sector2 = new ValueMarker(piloto.getFastest_sectors().get(2).getLap_number());
         sector2.setPaint(COR_EXTRA);
         sector2.setLabel("Melhor setor 2");
+        sector2.setLabelPaint(COR_TEXTO);
         plot.addDomainMarker(sector2);
 
         ValueMarker sector3 = new ValueMarker(piloto.getFastest_sectors().get(3).getLap_number());
         sector3.setPaint(COR_EXTRA);
         sector3.setLabel("Melhor setor 3");
+        sector3.setLabelPaint(COR_TEXTO);
         plot.addDomainMarker(sector3);
 
         ChartPanel chartPanel = new ChartPanel(chart);
@@ -602,6 +605,7 @@ public class Window extends JFrame {
         ValueMarker higherSp = new ValueMarker(cd.timePassed(piloto.getVoltas().get(lap_number).getDates().get("start_sector_1")));
         higherSp.setPaint(COR_EXTRA);
         higherSp.setLabel("Maior Velocidade");
+        higherSp.setLabelPaint(COR_TEXTO);
         plot.addDomainMarker(higherSp);
 
         ChartPanel chartPanel = new ChartPanel(chart);
