@@ -156,7 +156,7 @@ public class Window extends JFrame {
                         exibirCarregando(false);
                         try {
                             get();
-                            nomePiloto.setText(selecionado.toString() +(selecionado.isDnf() ? "(DNF) " :" "));
+                            nomePiloto.setText(selecionado.toString() +(selecionado.isDnf() ? "(DNF) " :(selecionado.isDns() ? "(DNS) " : " ")));
 
                             if (selecionado.getFastest_lap() == null) {
                                 getEmptyCharts();
